@@ -8,6 +8,20 @@
     state: latest
   become: true
 
+- name: ensure supervisor is started and set to start on boot
+  service:
+    name: redis-server
+    state: started
+    enabled: yes
+  become: yes
+
+- name: ensure supervisor is started and set to start on boot
+  service:
+    name: supervisor
+    state: started
+    enabled: yes
+  become: yes
+
 - name: configure localtime
   file:
     src: /usr/share/zoneinfo/{{ application_timezone }}

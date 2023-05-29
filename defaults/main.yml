@@ -9,5 +9,7 @@ apt_default_packages:
   - ntp
   - certbot
   - python3-certbot-nginx
+  - redis-server
+  - supervisor
 
 apt_extra_packages: []
