@@ -2,15 +2,9 @@
   apt: update_cache=yes
   become: true
 
-- name: Install default system packages
+- name: Install system packages
   apt:
-    pkg: "{{apt_default_packages}}"
-    state: latest
-  become: true
-
-- name: Install extra system packages
-  apt:
-    pkg: "{{apt_extra_packages}}"
+    pkg: "{{apt_default_packages + apt_extra_packages}}"
     state: latest
   become: true
 
