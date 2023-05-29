@@ -1,1 +1,13 @@
 ssh_keys: []
+apt_default_packages:
+  - curl
+  - wget
+  - vim
+  - htop
+  - tree
+  - pv
+  - ntp
+  - certbot
+  - python3-certbot-nginx
+
+apt_extra_packages: []
