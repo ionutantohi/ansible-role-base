@@ -1,0 +1,65 @@
+- name: update apt cache
+  apt: update_cache=yes
+  become: true
+
+- name: Install system tools
+  apt:
+    pkg:
+      - curl
+      - wget
+      - vim
+      - htop
+      - tree
+      - pv
+      - ntp
+      - certbot
+      - python3-certbot-nginx
+      - jpegoptim
+      - optipng
+      - pngquant
+      - webp
+    state: latest
+  become: true
+
+- name: configure localtime
+  file:
+    src: /usr/share/zoneinfo/{{ application_timezone }}
+    dest: /etc/localtime
+    owner: root
+    group: root
+    mode: 644
+    state: link
+    force: yes
+  register: server_timezone
+  become: true
+
+- name: update timezone
+  command: dpkg-reconfigure --frontend noninteractive tzdata
+  when: server_timezone.changed
+  become: true
+  notify:
+    - restart cron
+
+- name: configure locale
+  lineinfile:
+    dest: /etc/default/locale
+    line: "{{ item.line }}"
+  with_items:
+    - { line: 'LANG="en_US.UTF-8"' }
+    - { line: 'LC_ALL="en_US.UTF-8"' }
+  become: true
+
+- name: setup ssh forwarding for 'become'
+  copy:
+    content: |
+      Defaults        env_keep+=SSH_AUTH_SOCK
+    dest: /etc/sudoers.d/10-keep-ssh-env
+    mode: 0440
+  become: yes
+
+- name: add ssh keys to authorized keys
+  authorized_key:
+    user: "{{ansible_user}}"
+    key: "{{item.type | default('ssh-rsa')}} {{item.hash}} {{item.comment}}"
+    state: present
+  with_items: "{{ssh_keys}}"
