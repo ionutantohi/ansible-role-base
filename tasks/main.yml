@@ -8,7 +8,7 @@
     state: latest
   become: true
 
-- name: ensure supervisor is started and set to start on boot
+- name: ensure redis is started and set to start on boot
   service:
     name: redis-server
     state: started
