@@ -1,4 +1,4 @@
-ssh_keys: []
+application_timezone: "UTC"
 apt_default_packages:
   - curl
   - wget
@@ -11,5 +11,5 @@ apt_default_packages:
   - python3-certbot-nginx
   - redis-server
   - supervisor
-
 apt_extra_packages: []
+ssh_keys: []
