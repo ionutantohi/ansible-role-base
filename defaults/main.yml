@@ -1,12 +1,15 @@
 application_timezone: "UTC"
 apt_default_packages:
+  - git
   - curl
   - wget
   - vim
   - htop
   - tree
   - pv
-  - ntp
+  - locales
+  - unattended-upgrades
+  - chrony
   - certbot
   - python3-certbot-nginx
   - redis-server

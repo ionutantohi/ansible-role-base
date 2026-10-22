@@ -8,18 +8,15 @@
     state: latest
   become: true
 
-- name: ensure redis is started and set to start on boot
+- name: ensure services are started and set to start on boot
   service:
-    name: redis-server
+    name: "{{item}}"
     state: started
     enabled: yes
-  become: yes
-
-- name: ensure supervisor is started and set to start on boot
-  service:
-    name: supervisor
-    state: started
-    enabled: yes
+  with_items:
+    - redis-server
+    - supervisor
+    - chrony
   become: yes
 
 - name: configure localtime
@@ -40,6 +37,12 @@
   become: true
   notify:
     - restart cron
+
+- name: generate en_US.UTF-8 locale
+  locale_gen:
+    name: en_US.UTF-8
+    state: present
+  become: true
 
 - name: configure locale
   lineinfile:
