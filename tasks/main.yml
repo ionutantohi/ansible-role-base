@@ -38,6 +38,31 @@
   notify:
     - restart cron
 
+- name: create a group for ssh users
+  group:
+    name: developers
+    state: present
+  become: yes
+
+ # the password must be in crypt format. use "openssl passwd -6" to generate it
+- name: create ssh users
+  user:
+    name: "{{item.username}}"
+    password: "{{item.password}}"
+    groups: developers,sudo
+    shell: /bin/bash
+    append: yes
+  loop: "{{ssh_users}}"
+  become: yes
+
+- name: add ssh keys to users
+  authorized_key:
+    user: "{{item.0.username}}"
+    key: "{{item.1.type | default('ssh-rsa')}} {{item.1.hash}} {{item.1.comment}}"
+    state: present
+  with_items: "{{ssh_users|subelements('keys')}}"
+  become: yes
+
 - name: setup ssh forwarding for 'become'
   copy:
     content: |
@@ -45,10 +70,3 @@
     dest: /etc/sudoers.d/10-keep-ssh-env
     mode: 0440
   become: yes
-
-- name: add ssh keys to authorized keys
-  authorized_key:
-    user: "{{ansible_user}}"
-    key: "{{item.type | default('ssh-rsa')}} {{item.hash}} {{item.comment}}"
-    state: present
-  with_items: "{{ssh_keys}}"

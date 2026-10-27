@@ -15,4 +15,4 @@ apt_default_packages:
   - redis-server
   - supervisor
 apt_extra_packages: []
-ssh_keys: []
+ssh_users: []
