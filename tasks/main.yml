@@ -60,7 +60,7 @@
     user: "{{item.0.username}}"
     key: "{{item.1.type | default('ssh-rsa')}} {{item.1.hash}} {{item.1.comment}}"
     state: present
-  with_items: "{{ssh_users|subelements('keys')}}"
+  loop: "{{ssh_users|subelements('keys')}}"
   become: yes
 
 - name: setup ssh forwarding for 'become'
