@@ -1,12 +1,12 @@
 - name: update apt cache
   apt: update_cache=yes
-  become: true
+  become: yes
 
 - name: Install system packages
   apt:
     pkg: "{{apt_default_packages + apt_extra_packages}}"
     state: latest
-  become: true
+  become: yes
 
 - name: ensure services are started and set to start on boot
   service:
@@ -40,12 +40,12 @@
     state: link
     force: yes
   register: server_timezone
-  become: true
+  become: yes
 
 - name: update timezone
   command: dpkg-reconfigure --frontend noninteractive tzdata
   when: server_timezone.changed
-  become: true
+  become: yes
   notify:
     - restart cron
 
