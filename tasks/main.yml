@@ -19,17 +19,6 @@
     - chrony
   become: yes
 
-- name: Mask tmp.mount so /tmp stays on disk after reboot
-  systemd:
-    name: tmp.mount
-    masked: yes
-  become: yes
-
-- name: Unmount /tmp in case it is currently on tmpfs
-  command: umount -l /tmp
-  failed_when: false
-  become: yes
-
 - name: configure localtime
   file:
     src: /usr/share/zoneinfo/{{ application_timezone }}
