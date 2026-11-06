@@ -9,6 +9,7 @@ apt_default_packages:
   - pv
   - gpg
   - unattended-upgrades
+  - cron
   - chrony
   - certbot
   - python3-certbot-nginx
