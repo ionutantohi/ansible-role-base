@@ -1,8 +1,35 @@
+- name: wait for cloud-init to finish
+  command: cloud-init status --wait
+  changed_when: false
+  become: yes
+
+- name: remove stale known_hosts entry for this box
+  local_action:
+    module: known_hosts
+    name: "{{ inventory_hostname }}"
+    state: absent
+
+- name: mask tmp.mount so /tmp stays on disk instead of tmpfs
+  systemd:
+    name: tmp.mount
+    masked: yes
+  become: yes
+  register: tmp_mount_masked
+
+- name: unmount /tmp if it is currently on tmpfs
+  command: umount -l /tmp
+  become: yes
+  failed_when: false
+  when: tmp_mount_masked.changed
+
+- name: force a fresh SSH connection so agent forwarding re-negotiates against the new /tmp
+  meta: reset_connection
+
 - name: update apt cache
   apt: update_cache=yes
   become: yes
 
-- name: Install system packages
+- name: install system packages
   apt:
     pkg: "{{apt_default_packages + apt_extra_packages}}"
     state: latest
@@ -17,17 +44,6 @@
     - redis-server
     - supervisor
     - chrony
-  become: yes
-
-- name: Mask tmp.mount so /tmp stays on disk after reboot
-  systemd:
-    name: tmp.mount
-    masked: yes
-  become: yes
-
-- name: Unmount /tmp in case it is currently on tmpfs
-  command: umount -l /tmp
-  failed_when: false
   become: yes
 
 - name: configure localtime
